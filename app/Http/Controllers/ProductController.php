@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\product;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Views\Views;
 use function PHPUnit\Framework\returnArgument;
 
@@ -17,9 +18,9 @@ class ProductController extends Controller
     {
         // controlador que me muestra Lista de productos
         $products = product::all();
-        // debe existir la vista 
+        // debe existir la vista
         return view('products.index', compact('products'));
-        
+
     }
 
     /**
@@ -36,7 +37,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // metodo para gestionar el clic al boton guardar 
+        // metodo para gestionar el clic al boton guardar
         $validate = $request -> validate([
         'nombre' => 'required|string|max:255',
         'descripcion' => 'nullable|string|max:255',
@@ -45,7 +46,7 @@ class ProductController extends Controller
         ]);
          product::create($validate);
         // crea el objeto validate , aqui no es necesario hacer INSERT INTO
-    
+
         return redirect() ->route('products.index') -> with('succes','Producto registrado exitosamente');
 
 
@@ -66,7 +67,7 @@ class ProductController extends Controller
      */
     public function edit(product $product)
     {
-        // controlador que maneja el clic Editar en la tabla 
+        // controlador que maneja el clic Editar en la tabla
 
         return view('products.edit',compact('product'));
 
@@ -85,9 +86,9 @@ class ProductController extends Controller
         'precio' => 'required|numeric|min:0',
         'stock' =>  'required|integer|min:0'
         ]);
-         product::update($validate);
+         $product->update($validate);
         // crea el objeto validate , aqui no es necesario hacer INSERT INTO
-    
+
         return redirect() ->route('products.index') -> with('succes','Producto actualizado exitosamente');
 
 
@@ -96,11 +97,11 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(product $product)
+    public function destroy(product $product) : RedirectResponse
     {
-        // Eliminar producto 
-        product :: delete();
-         return redirect() ->route('products.index') -> with('succes','Producto Eliminado exitosamente');
+        // Eliminar producto
+        $product -> delete();
+        return redirect() ->route('products.index') -> with('success','Producto Eliminado exitosamente');
 
     }
 }
